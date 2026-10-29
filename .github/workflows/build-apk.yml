@@ -50,8 +50,14 @@ jobs:
       - name: 8. Generar Gradle Wrapper y Compilar APK
         working-directory: android
         run: |
-          gradle wrapper
-          chmod +x gradlew
+          mkdir -p gradle/wrapper
+          if [ ! -f gradle/wrapper/gradle-wrapper.jar ]; then
+            curl -L https://github.com/gradle/gradle/raw/v8.2.0/gradle/wrapper/gradle-wrapper.jar -o gradle/wrapper/gradle-wrapper.jar
+          fi
+          if [ ! -f gradlew ]; then
+            curl -L https://raw.githubusercontent.com/gradle/gradle/v8.2.0/gradlew -o gradlew
+            chmod +x gradlew
+          fi
           ./gradlew assembleDebug --stacktrace
 
       - name: 9. Renombrar y Preparar APK para Descarga
