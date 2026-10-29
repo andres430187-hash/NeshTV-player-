@@ -4,6 +4,10 @@
   "webDir": "dist",
   "server": {
     "url": "https://netbook-dist.vercel.app",
-    "cleartext": true
+    "cleartext": true,
+    "allowNavigation": [
+      "netbook-dist.vercel.app",
+      "*.vercel.app"
+    ]
   }
 }
