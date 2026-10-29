@@ -1,0 +1,6 @@
+{
+  "name": "NeshTV Pro IPTV",
+  "description": "Reproductor IPTV profesional estilo Smarters con monitor en tiempo real y panel de administración privado.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

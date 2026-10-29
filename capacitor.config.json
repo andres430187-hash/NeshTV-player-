@@ -1,0 +1,8 @@
+{
+  "appId": "com.neshtv.iptv",
+  "appName": "NeshTV",
+  "webDir": "dist",
+  "server": {
+    "cleartext": true
+  }
+}

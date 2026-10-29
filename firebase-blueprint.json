@@ -1,0 +1,117 @@
+{
+  "entities": {
+    "UserAccount": {
+      "title": "UserAccount",
+      "description": "Cuentas de usuario de NeshTV con credenciales y estado de suscripción",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "username": { "type": "string", "maxLength": 64 },
+        "password": { "type": "string", "maxLength": 128 },
+        "expiryDate": { "type": "string", "maxLength": 32 },
+        "status": { "type": "string", "enum": ["active", "blocked"] },
+        "notes": { "type": "string", "maxLength": 500 },
+        "blockedChannels": { "type": "array" },
+        "assignedList": { "type": "string", "enum": ["all", "standard", "listapro"] },
+        "assignedPlaylistId": { "type": "string", "maxLength": 128 },
+        "createdAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id", "username", "status"]
+    },
+    "ChannelItem": {
+      "title": "ChannelItem",
+      "description": "Canales de televisión en vivo IPTV",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "number": { "type": "number" },
+        "name": { "type": "string", "maxLength": 128 },
+        "category": { "type": "string", "maxLength": 64 },
+        "logo": { "type": "string", "maxLength": 1024 },
+        "url": { "type": "string", "maxLength": 2048 },
+        "resolution": { "type": "string", "maxLength": 64 },
+        "isBlocked": { "type": "boolean" },
+        "playlistId": { "type": "string", "maxLength": 128 }
+      },
+      "required": ["id", "name", "url"]
+    },
+    "VodItem": {
+      "title": "VodItem",
+      "description": "Contenido bajo demanda: películas y series de televisión",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "title": { "type": "string", "maxLength": 256 },
+        "category": { "type": "string", "maxLength": 64 },
+        "type": { "type": "string", "enum": ["movie", "series"] },
+        "year": { "type": "number" },
+        "rating": { "type": "string", "maxLength": 32 },
+        "poster": { "type": "string", "maxLength": 1024 },
+        "synopsis": { "type": "string", "maxLength": 2048 },
+        "duration": { "type": "string", "maxLength": 64 },
+        "url": { "type": "string", "maxLength": 2048 },
+        "isBlocked": { "type": "boolean" },
+        "playlistId": { "type": "string", "maxLength": 128 }
+      },
+      "required": ["id", "title", "url", "type"]
+    },
+    "IPTVPlaylist": {
+      "title": "IPTVPlaylist",
+      "description": "Listas de reproducción IPTV M3U y Xtream Codes sincronizadas",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 128 },
+        "type": { "type": "string", "enum": ["m3u", "xtream"] },
+        "url": { "type": "string", "maxLength": 2048 },
+        "username": { "type": "string", "maxLength": 128 },
+        "password": { "type": "string", "maxLength": 128 },
+        "lastSynced": { "type": "string", "maxLength": 64 },
+        "channelCount": { "type": "number" },
+        "active": { "type": "boolean" },
+        "status": { "type": "string", "enum": ["working", "failed", "untested"] },
+        "statusMessage": { "type": "string", "maxLength": 512 },
+        "latencyMs": { "type": "number" },
+        "enableChannels": { "type": "boolean" },
+        "enableMovies": { "type": "boolean" },
+        "enableSeries": { "type": "boolean" }
+      },
+      "required": ["id", "name", "url", "type"]
+    },
+    "AppConfig": {
+      "title": "AppConfig",
+      "description": "Configuración global de NeshTV, mensajes flotantes y notas de contacto",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "contactNote": { "type": "string", "maxLength": 1024 },
+        "floatingMessage": { "type": "object" },
+        "playerSettings": { "type": "object" },
+        "updatedAt": { "type": "string", "maxLength": 64 }
+      },
+      "required": ["id"]
+    }
+  },
+  "firestore": {
+    "/config/{configId}": {
+      "schema": "AppConfig",
+      "description": "Ajustes del sistema NeshTV, anuncios y configuración del reproductor"
+    },
+    "/users/{userId}": {
+      "schema": "UserAccount",
+      "description": "Usuarios autorizados y suscripciones"
+    },
+    "/channels/{channelId}": {
+      "schema": "ChannelItem",
+      "description": "Canales de televisión en vivo"
+    },
+    "/vod/{vodId}": {
+      "schema": "VodItem",
+      "description": "Películas y series bajo demanda"
+    },
+    "/playlists/{playlistId}": {
+      "schema": "IPTVPlaylist",
+      "description": "Fuentes M3U y servidores Xtream sincronizados"
+    }
+  }
+}

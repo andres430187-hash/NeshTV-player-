@@ -1,0 +1,78 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'andres430187@gmail.com' ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    // Default deny catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Public / Client read for App Config
+    match /config/{configId} {
+      allow get: if isValidId(configId);
+      allow list: if true;
+      allow write: if isAdmin();
+    }
+
+    // Channel list: readable by app users, writable by admin
+    match /channels/{channelId} {
+      allow get: if isValidId(channelId);
+      allow list: if true;
+      allow write: if isAdmin();
+    }
+
+    // VOD Catalog: readable by app users, writable by admin
+    match /vod/{vodId} {
+      allow get: if isValidId(vodId);
+      allow list: if true;
+      allow write: if isAdmin();
+    }
+
+    // Playlists: readable and writable by admin
+    match /playlists/{playlistId} {
+      allow get: if isValidId(playlistId);
+      allow list: if true;
+      allow write: if isAdmin();
+    }
+
+    // Users: each user can read their own account; admin can manage all
+    match /users/{userId} {
+      allow get: if isValidId(userId) && (isOwner(userId) || isAdmin());
+      allow list: if isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // Admins registry
+    match /admins/{adminId} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+  }
+}

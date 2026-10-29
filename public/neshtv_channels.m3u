@@ -1,0 +1,31 @@
+#EXTM3U
+#EXTINF:-1 tvg-id="ch_1" tvg-logo="https://images.unsplash.com/photo-1594909122845-11baa439b7bf?w=120&auto=format&fit=crop&q=80" group-title="Argentina & Deportes",Telefe HD Argentina
+https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
+#EXTINF:-1 tvg-id="ch_2" tvg-logo="https://images.unsplash.com/photo-1522869635100-9f4c5e86aa37?w=120&auto=format&fit=crop&q=80" group-title="Argentina & Deportes",El Trece HD
+https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8
+#EXTINF:-1 tvg-id="ch_3" tvg-logo="https://images.unsplash.com/photo-1585829365295-ab7cd400c167?w=120&auto=format&fit=crop&q=80" group-title="Argentina & Deportes",TN Todo Noticias
+https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
+#EXTINF:-1 tvg-id="ch_4" tvg-logo="https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=120&auto=format&fit=crop&q=80" group-title="Argentina & Deportes",C5N Argentina
+https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8
+#EXTINF:-1 tvg-id="ch_5" tvg-logo="https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=120&auto=format&fit=crop&q=80" group-title="Argentina & Deportes",América TV HD
+https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel.ism/.m3u8
+#EXTINF:-1 tvg-id="ch_6" tvg-logo="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=120&auto=format&fit=crop&q=80" group-title="Deportes Premium",ESPN Premium Argentina
+https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
+#EXTINF:-1 tvg-id="ch_7" tvg-logo="https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=120&auto=format&fit=crop&q=80" group-title="Deportes Premium",TNT Sports Argentina
+https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8
+#EXTINF:-1 tvg-id="ch_8" tvg-logo="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=120&auto=format&fit=crop&q=80" group-title="Deportes Premium",TyC Sports HD
+https://vjs.zencdn.net/v/oceans.mp4
+#EXTINF:-1 tvg-id="ch_9" tvg-logo="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=120&auto=format&fit=crop&q=80" group-title="Deportes Premium",Fox Sports 1 UHD
+https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel.ism/.m3u8
+#EXTINF:-1 tvg-id="ch_10" tvg-logo="https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=120&auto=format&fit=crop&q=80" group-title="Canales Premium",HBO Max Cinema HD
+https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel.ism/.m3u8
+#EXTINF:-1 tvg-id="ch_11" tvg-logo="https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=120&auto=format&fit=crop&q=80" group-title="Canales Premium",Star Channel HD
+https://d2zihajmogu5jn.cloudfront.net/bipbop-advanced/bipbop_16x9_variant.m3u8
+#EXTINF:-1 tvg-id="ch_12" tvg-logo="https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=120&auto=format&fit=crop&q=80" group-title="Canales Premium",Cinemax Latino
+https://vjs.zencdn.net/v/oceans.mp4
+#EXTINF:-1 tvg-id="ch_13" tvg-logo="https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=120&auto=format&fit=crop&q=80" group-title="Canales Premium",Universal+ HD
+https://raw.githubusercontent.com/bower-media-samples/big-buck-bunny-1080p-30s/master/video.mp4
+#EXTINF:-1 tvg-id="ch_14" tvg-logo="https://images.unsplash.com/photo-1534447677768-be436bb09401?w=120&auto=format&fit=crop&q=80" group-title="Infantiles",Disney Channel Latino HD
+https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8
+#EXTINF:-1 tvg-id="ch_15" tvg-logo="https://images.unsplash.com/photo-1563089145-599997674d42?w=120&auto=format&fit=crop&q=80" group-title="Infantiles",Cartoon Network Latino HD
+https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8

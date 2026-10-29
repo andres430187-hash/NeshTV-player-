@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Acceso al Panel NeshTV</title>
+  <style>
+    body {
+      background-color: #09090b;
+      color: #f4f4f5;
+      font-family: system-ui, -apple-system, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+    }
+    .card {
+      background-color: #121215;
+      border: 1px solid #27272a;
+      border-radius: 16px;
+      padding: 32px;
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(0, 240, 255, 0.1);
+      color: #00F0FF;
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+    h1 {
+      font-size: 22px;
+      margin: 0 0 10px 0;
+      color: #fff;
+    }
+    p {
+      font-size: 13px;
+      color: #a1a1aa;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      box-sizing: border-box;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: #00F0FF;
+      color: #000;
+    }
+    .btn-primary:hover {
+      background: #00c7d4;
+    }
+    .btn-secondary {
+      background: #27272a;
+      color: #e4e4e7;
+    }
+    .btn-secondary:hover {
+      background: #3f3f46;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="badge">NeshTV Suite Netbook</div>
+    <h1>Panel de Administración</h1>
+    <p>Selecciona cómo deseas abrir el Panel de Control en tu Netbook:</p>
+    <a href="http://localhost:3000/" target="_blank" class="btn btn-primary">Abrir Servidor Local (http://localhost:3000)</a>
+    <a href="https://294fb124-2a08-4c6b-8e46-47675f62507e.applets.cloud.google.com/" target="_blank" class="btn btn-secondary">Abrir Panel en la Nube (Cloud)</a>
+  </div>
+</body>
+</html>
