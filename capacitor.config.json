@@ -3,6 +3,7 @@
   "appName": "NeshTV",
   "webDir": "dist",
   "server": {
+    "url": "https://netbook-dist.vercel.app",
     "cleartext": true
   }
 }
