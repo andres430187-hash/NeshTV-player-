@@ -34,18 +34,20 @@ jobs:
           cp -r netbook-dist electron-app/
           cd electron-app
 
-          # Crear configuración automática de Electron
+          # Configuración de Electron con los campos author y description obligatorios para Windows
           cat << 'EOF' > package.json
           {
-            "name": "neshtv-desktop",
+            "name": "neshtv-panel",
             "version": "1.0.0",
+            "description": "Panel de Administración NeshTV",
+            "author": "NeshTV",
             "main": "main.js",
             "scripts": {
               "build": "electron-builder --win --linux"
             },
             "build": {
-              "appId": "com.neshtv.desktop",
-              "productName": "NeshTV",
+              "appId": "com.neshtv.panel",
+              "productName": "NeshTV Panel",
               "directories": {
                 "output": "dist-electron"
               },
@@ -63,7 +65,7 @@ jobs:
           }
           EOF
 
-          # Crear el motor de la ventana de Windows
+          # Motor de la ventana de Windows conectado directo al panel de administrador en Render
           cat << 'EOF' > main.js
           const { app, BrowserWindow } = require('electron');
           const path = require('path');
@@ -72,20 +74,14 @@ jobs:
             const win = new BrowserWindow({
               width: 1280,
               height: 720,
-              autoHideMenuBar: true, // Oculta la molesta barra superior de Windows
+              autoHideMenuBar: true,
               webPreferences: {
                 nodeIntegration: false,
                 contextIsolation: true
               }
             });
 
-            // Opción 1: Carga los archivos locales de tu computadora (sin necesidad de internet para arrancar)
-            win.loadFile(path.join(__dirname, 'netbook-dist/index.html'));
-            
-            // Opción 2: Si querés que el programa se actualice solo y cargue desde la nube como la APK,
-            // podés borrar la línea de arriba y descomentar una de las siguientes dependiendo qué app sea:
-            // win.loadURL('https://neshtv-player-pro.onrender.com');
-            // win.loadURL('https://netbook-dist.vercel.app');
+            win.loadURL('https://neshtv-player-pro.onrender.com');
           }
 
           app.whenReady().then(createWindow);
@@ -95,26 +91,26 @@ jobs:
           });
           EOF
 
-          # Instalar y compilar el .exe
+          # Instalar dependencias y compilar el instalador .exe
           npm install
           npm run build
 
-          # Preparar archivos para descargar
+          # Preparar archivos finales para descarga
           cd ..
           mkdir -p release-builds
-          cp electron-app/dist-electron/*.exe release-builds/NeshTV-Instalador-Windows.exe || true
-          cp electron-app/dist-electron/*.AppImage release-builds/NeshTV-Linux.AppImage || true
+          cp electron-app/dist-electron/*.exe release-builds/NeshTV-Panel-Instalador-Windows.exe || true
+          cp electron-app/dist-electron/*.AppImage release-builds/NeshTV-Panel-Linux.AppImage || true
 
       - name: 6. Subir Instalador Windows (.exe)
         uses: actions/upload-artifact@v4
         with:
-          name: NeshTV-Instalador-Windows-EXE
-          path: release-builds/NeshTV-Instalador-Windows.exe
+          name: NeshTV-Panel-Instalador-Windows-EXE
+          path: release-builds/NeshTV-Panel-Instalador-Windows.exe
           retention-days: 30
 
       - name: 7. Subir Ejecutable Linux (.AppImage)
         uses: actions/upload-artifact@v4
         with:
-          name: NeshTV-Instalador-Linux
-          path: release-builds/NeshTV-Linux.AppImage
+          name: NeshTV-Panel-Instalador-Linux
+          path: release-builds/NeshTV-Panel-Linux.AppImage
           retention-days: 30
