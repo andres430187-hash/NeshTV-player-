@@ -44,28 +44,34 @@ jobs:
           distribution: 'temurin'
           java-version: 17
 
-      - name: 7. Configurar Gradle
+      - name: 7. Instalar Android SDK Platform 33
+        run: |
+          export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
+          yes | sdkmanager --licenses || true
+          sdkmanager "platforms;android-33" "build-tools;33.0.2"
+
+      - name: 8. Configurar Gradle
         uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: 8.2
           cache-disabled: true
 
-      - name: 8. Compilar APK con Gradle
+      - name: 9. Compilar APK con Gradle
         working-directory: android
         run: |
           echo "sdk.dir=/usr/local/lib/android/sdk" > local.properties
           gradle wrapper --gradle-version 8.2
           chmod +x gradlew
-          ./gradlew assembleDebug --stacktrace --info
+          ./gradlew assembleDebug --stacktrace
 
-      - name: 9. Renombrar y Preparar APK para Descarga
+      - name: 10. Renombrar y Preparar APK para Descarga
         run: |
           mkdir -p build-output
           cp android/app/build/outputs/apk/debug/app-debug.apk build-output/NeshTV-v3.0.0-Android6-to-14.apk
           echo "APK generado con éxito:"
           ls -lh build-output/NeshTV-v3.0.0-Android6-to-14.apk
 
-      - name: 10. Subir APK como Artefacto de Descarga
+      - name: 11. Subir APK como Artefacto de Descarga
         uses: actions/upload-artifact@v4
         with:
           name: NeshTV-v3.0.0-Android6-to-14
