@@ -21,10 +21,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
 
       - name: 3. Instalar Dependencias Web
-        run: npm install
+        run: npm install --legacy-peer-deps --force
 
       - name: 4. Compilar Aplicación Web (Vite + Polyfills Android 6+)
         run: npm run build
