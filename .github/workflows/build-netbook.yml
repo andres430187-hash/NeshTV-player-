@@ -76,7 +76,7 @@ jobs:
               }
             });
 
-            win.loadURL('https://neshtv-player-pro.onrender.com');
+            win.loadURL('https://netbook-dist.vercel.app');
           }
 
           app.whenReady().then(createWindow);
@@ -155,7 +155,7 @@ jobs:
               width: 1280, height: 720, autoHideMenuBar: true,
               webPreferences: { nodeIntegration: false, contextIsolation: true }
             });
-            win.loadURL('https://neshtv-player-pro.onrender.com');
+            win.loadURL('https://netbook-dist.vercel.app');
           }
           app.whenReady().then(createWindow);
           app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
