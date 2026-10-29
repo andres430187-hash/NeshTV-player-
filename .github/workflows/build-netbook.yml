@@ -28,30 +28,93 @@ jobs:
       - name: 4. Compilar Aplicación y Preparar Distribución para Netbook
         run: npm run build:netbook
 
-      - name: 5. Crear Paquete Comprimido ZIP para Windows (Netbooks Intel Atom / Celeron)
+      - name: 5. Fabricar Instalador de Escritorio (.exe) con Electron
         run: |
-          cd netbook-dist
-          zip -r ../NeshTV-Panel-Netbook-Windows.zip .
+          mkdir -p electron-app
+          cp -r netbook-dist electron-app/
+          cd electron-app
+
+          # Crear configuración automática de Electron
+          cat << 'EOF' > package.json
+          {
+            "name": "neshtv-desktop",
+            "version": "1.0.0",
+            "main": "main.js",
+            "scripts": {
+              "build": "electron-builder --win --linux"
+            },
+            "build": {
+              "appId": "com.neshtv.desktop",
+              "productName": "NeshTV",
+              "directories": {
+                "output": "dist-electron"
+              },
+              "win": {
+                "target": "nsis"
+              },
+              "linux": {
+                "target": "AppImage"
+              }
+            },
+            "devDependencies": {
+              "electron": "^29.1.0",
+              "electron-builder": "^24.13.3"
+            }
+          }
+          EOF
+
+          # Crear el motor de la ventana de Windows
+          cat << 'EOF' > main.js
+          const { app, BrowserWindow } = require('electron');
+          const path = require('path');
+
+          function createWindow () {
+            const win = new BrowserWindow({
+              width: 1280,
+              height: 720,
+              autoHideMenuBar: true, // Oculta la molesta barra superior de Windows
+              webPreferences: {
+                nodeIntegration: false,
+                contextIsolation: true
+              }
+            });
+
+            // Opción 1: Carga los archivos locales de tu computadora (sin necesidad de internet para arrancar)
+            win.loadFile(path.join(__dirname, 'netbook-dist/index.html'));
+            
+            // Opción 2: Si querés que el programa se actualice solo y cargue desde la nube como la APK,
+            // podés borrar la línea de arriba y descomentar una de las siguientes dependiendo qué app sea:
+            // win.loadURL('https://neshtv-player-pro.onrender.com');
+            // win.loadURL('https://netbook-dist.vercel.app');
+          }
+
+          app.whenReady().then(createWindow);
+
+          app.on('window-all-closed', () => {
+            if (process.platform !== 'darwin') app.quit();
+          });
+          EOF
+
+          # Instalar y compilar el .exe
+          npm install
+          npm run build
+
+          # Preparar archivos para descargar
           cd ..
-          echo "Paquete Windows generado:"
-          ls -lh NeshTV-Panel-Netbook-Windows.zip
+          mkdir -p release-builds
+          cp electron-app/dist-electron/*.exe release-builds/NeshTV-Instalador-Windows.exe || true
+          cp electron-app/dist-electron/*.AppImage release-builds/NeshTV-Linux.AppImage || true
 
-      - name: 6. Crear Paquete Comprimido Tar.gz para Linux
-        run: |
-          tar -czvf NeshTV-Panel-Netbook-Linux.tar.gz -C netbook-dist .
-          echo "Paquete Linux generado:"
-          ls -lh NeshTV-Panel-Netbook-Linux.tar.gz
-
-      - name: 7. Subir Paquete Windows como Artefacto de Descarga
+      - name: 6. Subir Instalador Windows (.exe)
         uses: actions/upload-artifact@v4
         with:
-          name: NeshTV-Panel-Netbook-Windows
-          path: NeshTV-Panel-Netbook-Windows.zip
+          name: NeshTV-Instalador-Windows-EXE
+          path: release-builds/NeshTV-Instalador-Windows.exe
           retention-days: 30
 
-      - name: 8. Subir Paquete Linux como Artefacto de Descarga
+      - name: 7. Subir Ejecutable Linux (.AppImage)
         uses: actions/upload-artifact@v4
         with:
-          name: NeshTV-Panel-Netbook-Linux
-          path: NeshTV-Panel-Netbook-Linux.tar.gz
+          name: NeshTV-Instalador-Linux
+          path: release-builds/NeshTV-Linux.AppImage
           retention-days: 30
