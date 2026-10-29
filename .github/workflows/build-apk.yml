@@ -42,7 +42,7 @@ jobs:
           java-version: 17
 
       - name: 7. Configurar Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v2
 
       - name: 8. Configurar Gradle
         uses: gradle/actions/setup-gradle@v3
