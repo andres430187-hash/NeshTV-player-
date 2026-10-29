@@ -53,7 +53,9 @@ jobs:
       - name: 8. Compilar APK con Gradle
         working-directory: android
         run: |
-          gradle assembleDebug --stacktrace
+          gradle wrapper --gradle-version 8.2
+          chmod +x gradlew
+          ./gradlew assembleDebug --stacktrace
 
       - name: 9. Renombrar y Preparar APK para Descarga
         run: |
