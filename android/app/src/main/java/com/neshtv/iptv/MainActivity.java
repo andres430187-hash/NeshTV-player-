@@ -65,7 +65,7 @@ public class MainActivity extends Activity {
         });
 
         // Load live cloud web app URL so updates reflect instantly in the APK without re-downloading
-        webView.loadUrl("https://ais-pre-sirj5bdtvp7iz6yzywqhdi-881661771957.us-east1.run.app");
+        webView.loadUrl("https://netbook-dist.vercel.app");
     }
 
     /**
