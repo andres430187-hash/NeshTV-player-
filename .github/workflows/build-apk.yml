@@ -45,6 +45,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
         with:
           gradle-version: 8.2
+          cache-enabled: false
 
       - name: 8. Generar Gradle Wrapper y Compilar APK
         working-directory: android
