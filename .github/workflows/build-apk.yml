@@ -1,0 +1,72 @@
+name: Generar APK NeshTV (Android 6 a 14)
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Compilar APK NeshTV para Android TV y Móvil
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 1. Descargar Código (Checkout)
+        uses: actions/checkout@v4
+
+      - name: 2. Configurar Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: 3. Instalar Dependencias Web
+        run: npm install
+
+      - name: 4. Compilar Aplicación Web (Vite + Polyfills Android 6+)
+        run: npm run build
+
+      - name: 5. Copiar Archivos Web a Assets de Android
+        run: |
+          mkdir -p android/app/src/main/assets/public
+          cp -r dist/* android/app/src/main/assets/public/
+          echo "Archivos web copiados a android/app/src/main/assets/public/"
+          ls -la android/app/src/main/assets/public/
+
+      - name: 6. Configurar Java JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: 17
+
+      - name: 7. Configurar Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: 8. Configurar Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: 8.2
+
+      - name: 9. Generar Gradle Wrapper y Compilar APK
+        working-directory: android
+        run: |
+          gradle wrapper
+          chmod +x gradlew
+          ./gradlew assembleDebug --stacktrace
+
+      - name: 10. Renombrar y Preparar APK para Descarga
+        run: |
+          mkdir -p build-output
+          cp android/app/build/outputs/apk/debug/app-debug.apk build-output/NeshTV-v3.0.0-Android6-to-14.apk
+          echo "APK generado con éxito:"
+          ls -lh build-output/NeshTV-v3.0.0-Android6-to-14.apk
+
+      - name: 11. Subir APK como Artefacto de Descarga
+        uses: actions/upload-artifact@v4
+        with:
+          name: NeshTV-v3.0.0-Android6-to-14
+          path: build-output/NeshTV-v3.0.0-Android6-to-14.apk
+          retention-days: 30
