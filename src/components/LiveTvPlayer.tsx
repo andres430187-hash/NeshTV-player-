@@ -88,13 +88,13 @@ export const LiveTvPlayer: React.FC<LiveTvPlayerProps> = ({
     return ['Todos', ...Array.from(new Set(validChannels.map((c) => c.category || 'General')))];
   }, [validChannels]);
 
-  // Filter channels
+  // Filter channels (added safety fallbacks to prevent toLowerCase crashes)
   const filteredChannels = useMemo(() => {
     return validChannels.filter((c) => {
       const matchCat = activeCategory === 'Todos' || c.category === activeCategory;
       const matchSearch =
-        c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        c.number.toString().includes(searchQuery);
+        (c.name || '').toLowerCase().includes((searchQuery || '').toLowerCase()) ||
+        (c.number || '').toString().includes(searchQuery);
       return matchCat && matchSearch;
     });
   }, [validChannels, activeCategory, searchQuery]);
@@ -114,7 +114,7 @@ export const LiveTvPlayer: React.FC<LiveTvPlayerProps> = ({
     const session = playUniversalStream({
       url: selectedChannel.url,
       video: videoRef.current,
-      bufferSize: playerSettings.bufferSize || 25,
+      bufferSize: playerSettings?.bufferSize || 25,
       forceProxy: forceProxyMode,
       onStatusChange: (status, detail) => {
         setPlaybackStatus(status);
@@ -139,7 +139,7 @@ export const LiveTvPlayer: React.FC<LiveTvPlayerProps> = ({
     return () => {
       session.destroy();
     };
-  }, [selectedChannel, forceProxyMode, playerSettings.bufferSize]);
+  }, [selectedChannel, forceProxyMode, playerSettings?.bufferSize]);
 
   const handleSelectQuality = (lvlIndex: number) => {
     setSelectedQuality(lvlIndex);
@@ -297,7 +297,7 @@ export const LiveTvPlayer: React.FC<LiveTvPlayerProps> = ({
               className="tv-focusable flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 hover:border-[#00F0FF] text-xs text-zinc-300 hover:text-[#00F0FF] cursor-pointer"
             >
               <Sliders className="w-3.5 h-3.5" />
-              <span>Ajustes Decodificador ({playerSettings.decoder.toUpperCase()})</span>
+              <span>Ajustes Decodificador ({playerSettings?.decoder?.toUpperCase() || 'AUTO'})</span>
             </button>
           </div>
         </div>
@@ -601,7 +601,7 @@ export const LiveTvPlayer: React.FC<LiveTvPlayerProps> = ({
                       }
                       className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-xs rounded-xl text-zinc-300 cursor-pointer border border-zinc-700"
                     >
-                      Ratio: {aspectRatio.toUpperCase()}
+                      Ratio: {aspectRatio?.toUpperCase() || '16:9'}
                     </button>
                   </div>
                 </div>
@@ -768,7 +768,7 @@ export const LiveTvPlayer: React.FC<LiveTvPlayerProps> = ({
                     />
                     <span>
                       {playbackStatus === 'playing'
-                        ? `SEÑAL ACTIVA (${activeEngine.toUpperCase()})`
+                        ? `SEÑAL ACTIVA (${activeEngine?.toUpperCase() || ''})`
                         : playbackStatus === 'buffering'
                         ? 'BÚFER...'
                         : playbackStatus === 'connecting'
