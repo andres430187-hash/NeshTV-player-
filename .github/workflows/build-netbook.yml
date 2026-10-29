@@ -1,0 +1,58 @@
+name: Generar Software Netbook (Windows y Linux)
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-desktop:
+    name: Compilar Software Panel para Netbook / Laptop
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 1. Descargar Código (Checkout)
+        uses: actions/checkout@v4
+
+      - name: 2. Configurar Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: 3. Instalar Dependencias del Proyecto
+        run: npm install
+
+      - name: 4. Compilar Aplicación y Preparar Distribución para Netbook
+        run: npm run build:netbook
+
+      - name: 5. Crear Paquete Comprimido ZIP para Windows (Netbooks Intel Atom / Celeron)
+        run: |
+          cd netbook-dist
+          zip -r ../NeshTV-Panel-Netbook-Windows.zip .
+          cd ..
+          echo "Paquete Windows generado:"
+          ls -lh NeshTV-Panel-Netbook-Windows.zip
+
+      - name: 6. Crear Paquete Comprimido Tar.gz para Linux
+        run: |
+          tar -czvf NeshTV-Panel-Netbook-Linux.tar.gz -C netbook-dist .
+          echo "Paquete Linux generado:"
+          ls -lh NeshTV-Panel-Netbook-Linux.tar.gz
+
+      - name: 7. Subir Paquete Windows como Artefacto de Descarga
+        uses: actions/upload-artifact@v4
+        with:
+          name: NeshTV-Panel-Netbook-Windows
+          path: NeshTV-Panel-Netbook-Windows.zip
+          retention-days: 30
+
+      - name: 8. Subir Paquete Linux como Artefacto de Descarga
+        uses: actions/upload-artifact@v4
+        with:
+          name: NeshTV-Panel-Netbook-Linux
+          path: NeshTV-Panel-Netbook-Linux.tar.gz
+          retention-days: 30
