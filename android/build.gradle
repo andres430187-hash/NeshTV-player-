@@ -1,20 +1,18 @@
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:8.2.2'
-    }
+plugins {
+    id 'com.android.application'
 }
 
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
+android {
+    namespace 'com.neshtv.iptv'
+    compileSdk 33
 
-tasks.register('clean', Delete) {
-    delete rootProject.buildDir
-}
+    defaultConfig {
+        applicationId "com.neshtv.iptv"
+        minSdk 23 // Android 6.0 Marshmallow
+        targetSdk 33 // Android 13
+        versionCode 300
+        versionName "3.0.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+// ... resto del archivo
