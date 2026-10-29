@@ -9,9 +9,9 @@ permissions:
   contents: write
 
 jobs:
-  build-desktop:
-    name: Compilar Software Panel para Netbook / Laptop
-    runs-on: ubuntu-latest
+  build-windows:
+    name: Compilar Software Panel para Windows
+    runs-on: windows-latest
 
     steps:
       - name: 1. Descargar Código (Checkout)
@@ -25,16 +25,16 @@ jobs:
       - name: 3. Instalar Dependencias del Proyecto
         run: npm install --legacy-peer-deps --force
 
-      - name: 4. Compilar Aplicación y Preparar Distribución para Netbook
+      - name: 4. Compilar Aplicación
         run: npm run build:netbook
 
-      - name: 5. Fabricar Instalador de Escritorio (.exe) con Electron
+      - name: 5. Fabricar Instalador de Escritorio (.exe)
+        shell: bash
         run: |
           mkdir -p electron-app
           cp -r netbook-dist electron-app/
           cd electron-app
 
-          # Configuración de Electron con los campos author y description obligatorios para Windows
           cat << 'EOF' > package.json
           {
             "name": "neshtv-panel",
@@ -43,7 +43,7 @@ jobs:
             "author": "NeshTV",
             "main": "main.js",
             "scripts": {
-              "build": "electron-builder --win --linux"
+              "build": "electron-builder --win"
             },
             "build": {
               "appId": "com.neshtv.panel",
@@ -53,9 +53,6 @@ jobs:
               },
               "win": {
                 "target": "nsis"
-              },
-              "linux": {
-                "target": "AppImage"
               }
             },
             "devDependencies": {
@@ -65,10 +62,8 @@ jobs:
           }
           EOF
 
-          # Motor de la ventana de Windows conectado directo al panel de administrador en Render
           cat << 'EOF' > main.js
           const { app, BrowserWindow } = require('electron');
-          const path = require('path');
 
           function createWindow () {
             const win = new BrowserWindow({
@@ -91,26 +86,87 @@ jobs:
           });
           EOF
 
-          # Instalar dependencias y compilar el instalador .exe
           npm install
           npm run build
-
-          # Preparar archivos finales para descarga
-          cd ..
-          mkdir -p release-builds
-          cp electron-app/dist-electron/*.exe release-builds/NeshTV-Panel-Instalador-Windows.exe || true
-          cp electron-app/dist-electron/*.AppImage release-builds/NeshTV-Panel-Linux.AppImage || true
 
       - name: 6. Subir Instalador Windows (.exe)
         uses: actions/upload-artifact@v4
         with:
           name: NeshTV-Panel-Instalador-Windows-EXE
-          path: release-builds/NeshTV-Panel-Instalador-Windows.exe
+          path: electron-app/dist-electron/*.exe
           retention-days: 30
 
-      - name: 7. Subir Ejecutable Linux (.AppImage)
+  build-linux:
+    name: Compilar Software Panel para Linux
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 1. Descargar Código (Checkout)
+        uses: actions/checkout@v4
+
+      - name: 2. Configurar Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: 3. Instalar Dependencias del Proyecto
+        run: npm install --legacy-peer-deps --force
+
+      - name: 4. Compilar Aplicación
+        run: npm run build:netbook
+
+      - name: 5. Fabricar Ejecutable Linux (.AppImage)
+        run: |
+          mkdir -p electron-app
+          cp -r netbook-dist electron-app/
+          cd electron-app
+
+          cat << 'EOF' > package.json
+          {
+            "name": "neshtv-panel",
+            "version": "1.0.0",
+            "description": "Panel de Administración NeshTV",
+            "author": "NeshTV",
+            "main": "main.js",
+            "scripts": {
+              "build": "electron-builder --linux"
+            },
+            "build": {
+              "appId": "com.neshtv.panel",
+              "productName": "NeshTV Panel",
+              "directories": {
+                "output": "dist-electron"
+              },
+              "linux": {
+                "target": "AppImage"
+              }
+            },
+            "devDependencies": {
+              "electron": "^29.1.0",
+              "electron-builder": "^24.13.3"
+            }
+          }
+          EOF
+
+          cat << 'EOF' > main.js
+          const { app, BrowserWindow } = require('electron');
+          function createWindow () {
+            const win = new BrowserWindow({
+              width: 1280, height: 720, autoHideMenuBar: true,
+              webPreferences: { nodeIntegration: false, contextIsolation: true }
+            });
+            win.loadURL('https://neshtv-player-pro.onrender.com');
+          }
+          app.whenReady().then(createWindow);
+          app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
+          EOF
+
+          npm install
+          npm run build
+
+      - name: 6. Subir Ejecutable Linux (.AppImage)
         uses: actions/upload-artifact@v4
         with:
           name: NeshTV-Panel-Instalador-Linux
-          path: release-builds/NeshTV-Panel-Linux.AppImage
+          path: electron-app/dist-electron/*.AppImage
           retention-days: 30
