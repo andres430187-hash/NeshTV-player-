@@ -1,10 +1,10 @@
-const firebaseConfig = {
-  apiKey: "AIzaSyCuKb4WgiHHyDukCvrY9pyIqqutagt3W8s",
-  authDomain: "nestvpro.firebaseapp.com",
-  projectId: "nestvpro",
-  storageBucket: "nestvpro.firebasestorage.app",
-  messagingSenderId: "578269821811",
-  appId: "1:578269821811:web:750486f06c8b355e90a306",
-  measurementId: "G-M6C4DCFDVR"
-};
-
+{
+  "projectId": "nestvpro",
+  "appId": "1:578269821811:web:750486f06c8b355e90a306",
+  "apiKey": "AIzaSyCuKb4WgiHHyDukCvrY9pyIqqutagt3W8s",
+  "authDomain": "nestvpro.firebaseapp.com",
+  "firestoreDatabaseId": "(default)",
+  "storageBucket": "nestvpro.firebasestorage.app",
+  "messagingSenderId": "578269821811",
+  "measurementId": "G-M6C4DCFDVR"
+}
