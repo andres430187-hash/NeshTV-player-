@@ -14,6 +14,14 @@ import {
   PlayerSettings,
 } from '../types/index.ts';
 import {
+  fetchUsersFromFirestore,
+  saveUserToFirestore,
+  deleteUserFromFirestore,
+  fetchPlaylistsFromFirestore,
+  fetchChannelsFromFirestore,
+  fetchVodFromFirestore,
+} from '../utils/firestoreService.ts';
+import {
   ShieldCheck,
   Users,
   MessageSquare,
@@ -417,9 +425,36 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           setMonitoredVod((prev) => prev || data.vod[0]);
         }
         if (data.floatingMessage) setFloatingMsg(data.floatingMessage);
+      } else {
+        // Fallback for Vercel / serverless: load directly from Firebase Firestore
+        console.log('API /api/admin/data no disponible (Vercel), cargando directamente desde Firebase Firestore...');
+        const [fsUsers, fsPlaylists, fsChannels, fsVod] = await Promise.all([
+          fetchUsersFromFirestore(),
+          fetchPlaylistsFromFirestore(),
+          fetchChannelsFromFirestore(),
+          fetchVodFromFirestore(),
+        ]);
+        if (fsUsers.length > 0) setUsers(fsUsers);
+        if (fsPlaylists.length > 0) setPlaylists(fsPlaylists);
+        if (fsChannels.length > 0) setChannels(fsChannels);
+        if (fsVod.length > 0) setVod(fsVod);
       }
     } catch (err) {
-      console.error(err);
+      console.warn('Fallo petición API, cargando respaldo Firebase Firestore:', err);
+      try {
+        const [fsUsers, fsPlaylists, fsChannels, fsVod] = await Promise.all([
+          fetchUsersFromFirestore(),
+          fetchPlaylistsFromFirestore(),
+          fetchChannelsFromFirestore(),
+          fetchVodFromFirestore(),
+        ]);
+        if (fsUsers.length > 0) setUsers(fsUsers);
+        if (fsPlaylists.length > 0) setPlaylists(fsPlaylists);
+        if (fsChannels.length > 0) setChannels(fsChannels);
+        if (fsVod.length > 0) setVod(fsVod);
+      } catch (fsErr) {
+        console.error('Error cargando desde Firestore:', fsErr);
+      }
     } finally {
       setLoading(false);
     }
@@ -792,7 +827,19 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       return;
     }
 
+    const userPayload: UserAccount = {
+      id: editingUserId || `usr_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+      username: formUsername.trim(),
+      password: formPassword.trim(),
+      expiryDate: formExpiry.trim(),
+      status: formStatus,
+      notes: formNotes.trim(),
+      assignedList: formAssignedList,
+      createdAt: new Date().toISOString(),
+    };
+
     try {
+      let savedViaApi = false;
       if (editingUserId) {
         const res = await fetch(`/api/admin/users/${editingUserId}`, {
           method: 'PUT',
@@ -800,23 +847,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({
-            username: formUsername.trim(),
-            password: formPassword.trim(),
-            expiryDate: formExpiry.trim(),
-            status: formStatus,
-            notes: formNotes.trim(),
-            assignedList: formAssignedList,
-          }),
+          body: JSON.stringify(userPayload),
         });
-        const data = await res.json();
-        if (res.ok && data.success) {
-          showToast(`✓ Usuario "${formUsername}" actualizado con éxito`);
-          if (token) loadAdminData(token);
-          setShowUserModal(false);
-          onRefreshData?.();
-        } else {
-          showToast('Error al actualizar usuario: ' + (data.error || 'Fallo'));
+        if (res.ok) {
+          const data = await res.json().catch(() => ({ success: true }));
+          if (data.success) savedViaApi = true;
         }
       } else {
         const res = await fetch('/api/admin/users', {
@@ -825,27 +860,39 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({
-            username: formUsername.trim(),
-            password: formPassword.trim(),
-            expiryDate: formExpiry.trim(),
-            status: formStatus,
-            notes: formNotes.trim(),
-            assignedList: formAssignedList,
-          }),
+          body: JSON.stringify(userPayload),
         });
-        const data = await res.json();
-        if (res.ok && data.success) {
-          showToast(`✓ Usuario "${formUsername}" guardado en la base de datos.`);
-          if (token) loadAdminData(token);
-          setShowUserModal(false);
-          onRefreshData?.();
-        } else {
-          showToast('Error al crear usuario: ' + (data.error || 'Fallo'));
+        if (res.ok) {
+          const data = await res.json().catch(() => ({ success: true }));
+          if (data.success) savedViaApi = true;
         }
       }
+
+      // Also persist to Firebase Firestore directly (works on Vercel and offline)
+      await saveUserToFirestore(userPayload);
+
+      setUsers((prev) => {
+        const filtered = prev.filter((u) => u.id !== userPayload.id && u.username.toLowerCase() !== userPayload.username.toLowerCase());
+        return [userPayload, ...filtered];
+      });
+
+      showToast(`✓ Usuario "${formUsername}" guardado exitosamente en Firebase.`);
+      setShowUserModal(false);
+      onRefreshData?.();
     } catch (err) {
-      showToast('Error de red al guardar usuario');
+      // Fallback: save directly to Firestore even if network/API failed
+      try {
+        await saveUserToFirestore(userPayload);
+        setUsers((prev) => {
+          const filtered = prev.filter((u) => u.id !== userPayload.id && u.username.toLowerCase() !== userPayload.username.toLowerCase());
+          return [userPayload, ...filtered];
+        });
+        showToast(`✓ Usuario "${formUsername}" guardado en Firebase Firestore.`);
+        setShowUserModal(false);
+        onRefreshData?.();
+      } catch (fsErr) {
+        showToast('Error al guardar usuario en Firebase: ' + (fsErr as any)?.message);
+      }
     }
   };
 
