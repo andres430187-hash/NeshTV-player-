@@ -1,46 +1,59 @@
-import express from 'express';
-import { StorageService } from '../src/server/storage.ts';
+import mongoose from 'mongoose';
 
-const app = express();
-const storage = StorageService.getInstance();
+let cachedDb = null;
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+async function connectToDatabase() {
+  if (cachedDb && mongoose.connection.readyState === 1) {
+    return cachedDb;
+  }
+  const opts = { bufferCommands: false };
+  cachedDb = await mongoose.connect(process.env.MONGODB_URI, opts);
+  return cachedDb;
+}
 
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  if (req.method === 'OPTIONS') return res.sendStatus(200);
-  next();
+const userSchema = new mongoose.Schema({
+  username: { type: String, required: true },
+  password: { type: String, required: true },
+  expiryDate: { type: String, required: true },
+  status: { type: String, default: 'active' },
+  notes: String,
+  blockedChannels: [String],
+  createdAt: { type: String, default: () => new Date().toISOString() }
 });
 
-app.get('/api/public/info', (req, res) => {
+const UserModel = mongoose.models.User || mongoose.model('User', userSchema);
+
+export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  
+  if (req.method === 'OPTIONS') return res.status(200).end();
+
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Método no permitido' });
+  }
+
   try {
-    res.json(storage.getPublicInfo());
-  } catch (e) {
-    res.json({ contactNote: 'Para soporte técnico o renovaciones, contáctanos vía WhatsApp.' });
+    await connectToDatabase();
+    
+    const { username, password, expiryDate, status, notes, blockedChannels } = req.body || {};
+
+    if (!username || !password || !expiryDate) {
+      return res.status(400).json({ error: 'Faltan campos obligatorios' });
+    }
+
+    const newUser = await UserModel.create({
+      username,
+      password,
+      expiryDate,
+      status: status || 'active',
+      notes: notes || '',
+      blockedChannels: blockedChannels || []
+    });
+
+    return res.status(200).json({ success: true, user: newUser });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
   }
-});
-
-app.get('/api/admin/data', (req, res) => {
-  res.json(storage.getDb());
-});
-
-app.post('/api/admin/users', (req, res) => {
-  const { username, password, expiryDate, status, notes, blockedChannels } = req.body;
-  if (!username || !password || !expiryDate) {
-    return res.status(400).json({ error: 'Faltan campos obligatorios' });
-  }
-  const newUser = storage.addUser({
-    username,
-    password,
-    expiryDate,
-    status: status || 'active',
-    notes: notes || '',
-    blockedChannels: blockedChannels || [],
-  });
-  res.json({ success: true, user: newUser });
-});
-
-export default app;
+}
