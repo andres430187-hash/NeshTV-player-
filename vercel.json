@@ -1,9 +1,9 @@
 {
   "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "server.ts",
-      "use": "@vercel/node"
+      "source": "/api/admin/users",
+      "destination": "/api/index.js"
     }
   ]
 }
