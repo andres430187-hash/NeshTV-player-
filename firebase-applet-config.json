@@ -1,12 +1,21 @@
-{
-  "projectId": "steam-pointer-tv4kj",
-  "appId": "1:463924786111:web:5cb267990208233ebb270a",
-  "apiKey": "AIzaSyADqSQRQLH0rE0fd5eleTU7AIEttHtaaGg",
-  "authDomain": "steam-pointer-tv4kj.firebaseapp.com",
-  "firestoreDatabaseId": "ai-studio-neshtv-294fb124-2a08-4c6b-8e46-47675f62507e",
-  "storageBucket": "steam-pointer-tv4kj.firebasestorage.app",
-  "messagingSenderId": "463924786111",
-  "measurementId": "",
-  "oAuthClientId": "463924786111-jcq5h03c9ke44l414g97queucl0lj67d.apps.googleusercontent.com",
-  "recaptchaSiteKey": ""
-}
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyCuKb4WgiHHyDukCvrY9pyIqqutagt3W8s",
+  authDomain: "nestvpro.firebaseapp.com",
+  projectId: "nestvpro",
+  storageBucket: "nestvpro.firebasestorage.app",
+  messagingSenderId: "578269821811",
+  appId: "1:578269821811:web:750486f06c8b355e90a306",
+  measurementId: "G-M6C4DCFDVR"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
